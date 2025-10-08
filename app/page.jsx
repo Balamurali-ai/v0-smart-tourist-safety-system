@@ -8,16 +8,19 @@ import { Button } from "@/components/ui/button"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import Logo from "@/components/logo"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 
 export default function LoginPage() {
   const router = useRouter()
-  const { login, language, setLanguage, user } = useAuth()
+  const auth = useAuth()
+  const { login, language, setLanguage, user } = auth || {}
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
   const [role, setRole] = useState("Police")
 
-  if (user) router.replace("/dashboard")
+  useEffect(() => {
+    if (user) router.replace("/dashboard")
+  }, [user, router])
 
   return (
     <div className="min-h-dvh grid place-items-center p-4">
@@ -76,7 +79,7 @@ export default function LoginPage() {
           <Button
             className="w-full"
             onClick={() => {
-              login(username || "Officer", role)
+              if (login) login(username || "Officer", role)
               router.push("/dashboard")
             }}
           >
