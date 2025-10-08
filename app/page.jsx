@@ -17,10 +17,12 @@ export default function LoginPage() {
   const [username, setUsername] = useState("")
   const [password, setPassword] = useState("")
   const [role, setRole] = useState("Police")
+  const setLanguageSafe = setLanguage || (() => {})
 
   useEffect(() => {
+    console.log("[v0] LoginPage auth:", auth) // temporary debug log
     if (user) router.replace("/dashboard")
-  }, [user, router])
+  }, [user, router, auth])
 
   return (
     <div className="min-h-dvh grid place-items-center p-4">
@@ -28,7 +30,7 @@ export default function LoginPage() {
         <CardHeader>
           <div className="flex items-center justify-between">
             <Logo />
-            <Select value={language} onValueChange={setLanguage}>
+            <Select value={language || "en"} onValueChange={setLanguageSafe}>
               <SelectTrigger className="w-[140px]">
                 <SelectValue placeholder="Language" />
               </SelectTrigger>
@@ -79,7 +81,11 @@ export default function LoginPage() {
           <Button
             className="w-full"
             onClick={() => {
-              if (login) login(username || "Officer", role)
+              if (login) {
+                login(username || "Officer", role)
+              } else {
+                console.log("[v0] login() not available from auth context")
+              }
               router.push("/dashboard")
             }}
           >
