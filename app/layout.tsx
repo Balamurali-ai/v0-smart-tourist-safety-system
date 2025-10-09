@@ -10,9 +10,9 @@ import { AuthProvider } from "@/components/auth-context"
 import Script from "next/script" // 1. Import the Script component
 
 export const metadata: Metadata = {
-  title: "v0 App",
-  description: "Created with v0",
-  generator: "v0.app",
+  title: "Smart Tourist Safety System",
+  description: "Created for authorities",
+  
 }
 
 export default function RootLayout({
