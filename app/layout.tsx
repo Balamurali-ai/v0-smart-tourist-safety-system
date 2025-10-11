@@ -10,7 +10,7 @@ import { AuthProvider } from "@/components/auth-context"
 import Script from "next/script" // 1. Import the Script component
 
 export const metadata: Metadata = {
-  title: "🛡️ Smart Tourist Safety System",
+  title: "Smart Tourist Safety System",
   description: "Created for authorities",
   
 }
