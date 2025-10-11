@@ -1,5 +1,6 @@
 "use client"
 import Link from "next/link"
+import { ThemeToggle } from "@/components/theme-toggle" 
 import { usePathname, useRouter } from "next/navigation"
 import { useAuth } from "./auth-context"
 import Logo from "./logo"
@@ -77,6 +78,7 @@ export default function AppShell({ children }) {
                 <SelectItem value="bn">Bengali</SelectItem>
               </SelectContent>
             </Select>
+               <ThemeToggle />
           </div>
         </header>
         <div className="p-4">{children}</div>
