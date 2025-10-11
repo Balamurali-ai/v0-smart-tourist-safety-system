@@ -10,9 +10,9 @@ import { AuthProvider } from "@/components/auth-context"
 import Script from "next/script" // 1. Import the Script component
 
 export const metadata: Metadata = {
-  title: "v0 App",
-  description: "Created with v0",
-  generator: "v0.app",
+  title: "Smart Tourist Safety System",
+  description: "Created for authorities",
+  
 }
 
 export default function RootLayout({
@@ -30,25 +30,7 @@ export default function RootLayout({
           <Analytics />
         </Suspense>
 
-        {/* 2. Add the Script component here, before the closing </body> tag */}
-        <Script id="chatbase-embed" strategy="afterInteractive">
-          {`
-            (function(){
-              if(!window.chatbase||window.chatbase("getState")!=="initialized"){
-                  window.chatbase=(...arguments)=>{if(!window.chatbase.q){window.chatbase.q=[]}window.chatbase.q.push(arguments)};
-                  window.chatbase=new Proxy(window.chatbase,{get(target,prop){if(prop==="q"){return target.q}return(...args)=>target(prop,...args)}});
-              }
-              const onLoad=function(){
-                  const script=document.createElement("script");
-                  script.src="https://www.chatbase.co/embed.min.js";
-                  script.id="s7nauVgwXbisoOh9gDeH4";
-                  script.domain="www.chatbase.co";
-                  document.body.appendChild(script)
-              };
-              if(document.readyState==="complete"){onLoad()}else{window.addEventListener("load",onLoad)}
-            })();
-          `}
-        </Script>
+       
       </body>
     </html>
   )
