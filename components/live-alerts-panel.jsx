@@ -1,57 +1,60 @@
 "use client"
-import useSWR from "swr" // 1. Import SWR
+import useSWR, { mutate } from "swr"
+import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge"
 
-// A simple function to fetch data for SWR
-const fetcher = (url) => fetch(url).then((res) => res.json());
+const fetcher = (url) => fetch(url).then((r) => r.json())
+
+const severityColor = (s) =>
+  s === "High" ? "bg-red-600 text-white" : s === "Medium" ? "bg-yellow-500 text-black" : "bg-green-600 text-white"
 
 export default function LiveAlertsPanel() {
-  // 2. Use the SWR hook to fetch and auto-refresh data
-  const { data, error } = useSWR(
-    "/api/alerts",
-    fetcher,
-    { refreshInterval: 10000 } // Re-fetch every 10 seconds
-  );
+  const { data } = useSWR("/api/alerts", fetcher, { suspense: false })
+  const alerts = data?.alerts?.slice(0, 6) || []
 
-  // 3. Handle loading and error states gracefully
-  if (error) return <div className="p-4">Failed to load alerts.</div>
-  if (!data) return <div className="p-4">Loading alerts...</div>
-
-  const liveAlerts = data.alerts || [];
+  const mark = async (id, status) => {
+    // mock change locally only
+    mutate(
+      "/api/alerts",
+      (current) => {
+        const updated = current ? { ...current } : { alerts: [] }
+        updated.alerts = (updated.alerts || []).map((a) => (a.id === id ? { ...a, status } : a))
+        return updated
+      },
+      false,
+    )
+  }
 
   return (
-    <Card className="h-full">
-      <CardHeader>
-        <CardTitle>Live Alerts</CardTitle>
+    <Card>
+      <CardHeader className="pb-2">
+        <CardTitle className="text-sm">Live Alerts</CardTitle>
       </CardHeader>
-      <CardContent className="space-y-4">
-        {liveAlerts.length > 0 ? (
-          liveAlerts.map((alert) => (
-            <div key={alert.id} className="p-3 rounded-lg bg-muted/50">
-              <div className="flex justify-between items-center mb-1">
-                <span className="font-medium text-sm">{alert.location}</span>
-                <span
-                  className={`text-xs px-2 py-1 rounded-full ${
-                    alert.severity === "High" ? "bg-destructive/20 text-destructive" : "bg-secondary"
-                  }`}
-                >
-                  {alert.severity}
-                </span>
-              </div>
-              <p className="text-sm text-muted-foreground mb-2">
-                {alert.timestamp} • Status: {alert.status}
-              </p>
-              <p className="font-semibold text-sm mb-3">{alert.message}</p>
-              <div className="flex gap-2">
-                <Button size="sm" variant="outline">Acknowledge</Button>
-                <Button size="sm" variant="outline">Resolve</Button>
-              </div>
+      <CardContent className="space-y-3">
+        {alerts.map((a) => (
+          <div key={a.id} className="rounded border p-3 bg-background">
+            <div className="flex items-center justify-between">
+              <div className="font-medium text-foreground">{a.location}</div>
+              <Badge className={severityColor(a.severity)}>{a.severity}</Badge>
             </div>
-          ))
-        ) : (
-          <p className="text-muted-foreground text-sm">No active alerts.</p>
-        )}
+            <div className="text-xs text-muted-foreground mt-1">
+              {a.timestamp} • Status: {a.status}
+            </div>
+            <div className="text-sm mt-2">{a.message}</div>
+            <div className="mt-3 flex gap-2">
+              <Button variant="secondary" size="sm" onClick={() => mark(a.id, "Acknowledged")}>
+                Acknowledge
+              </Button>
+              <Button variant="outline" size="sm" onClick={() => mark(a.id, "Resolved")}>
+                Resolve
+              </Button>
+            </div>
+          </div>
+        ))}
+        <Button className="w-full bg-transparent" variant="outline">
+          View All Alerts
+        </Button>
       </CardContent>
     </Card>
   )
